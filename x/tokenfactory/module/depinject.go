@@ -8,6 +8,7 @@ import (
 	"cosmossdk.io/depinject/appconfig"
 	"github.com/cosmos/cosmos-sdk/codec"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 
 	"github.com/you/nuahchain/x/tokenfactory/keeper"
 	"github.com/you/nuahchain/x/tokenfactory/types"
@@ -34,7 +35,7 @@ type ModuleInputs struct {
 	AddressCodec address.Codec
 
 	AuthKeeper types.AuthKeeper
-	BankKeeper types.BankKeeper
+	BankKeeper bankkeeper.BaseKeeper
 }
 
 type ModuleOutputs struct {
