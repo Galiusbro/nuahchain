@@ -1,27 +1,47 @@
 version: 1
 validation: sovereign
-default_denom: unuah
-accounts: 
-- name: alice
-  coins:
-  - 20000token
-  - 200000000unuah
-- name: bob
-  coins:
-  - 10000token
-  - 100000000unuah
-client:
-  openapi:
-    path: docs/static/openapi.json
-faucet:
-  name: bob
-  coins:
-  - 5token
-  - 100000stake
+
+accounts:
+  - name: alice
+    coins: ["100000000000unuah"]   # 100,000 NUAH
+  - name: bob
+    coins: ["50000000000unuah"]    # 50,000 NUAH
+
 validators:
-- name: alice
-  bonded: 100000000unuah
-- name: validator1
-  bonded: 200000000unuah
-- name: validator2
-  bonded: 100000000unuah
+  - name: alice                      # должен совпадать с accounts[].name
+    bonded: "100000000unuah"         # 100 NUAH в стейкинг
+    app:
+      minimum-gas-prices: "0.025unuah"  # комиссии в unuah
+
+faucet:
+  name: alice
+  coins: ["100000000unuah"]          # кран раздаёт unuah
+
+# (не обязательно, но удобно для локалки)
+client:
+  keyring-backend: test
+
+genesis:
+  app_state:
+    bank:
+      denom_metadata:
+        - base: "unuah"
+          name: "NUAH"
+          symbol: "NUAH"
+          display: "nuah"
+          denom_units:
+            - denom: "unuah"         # базовая единица
+              exponent: 0
+              aliases: ["micro-nuah"]
+            - denom: "nuah"          # 1 NUAH = 10^6 unuah
+              exponent: 6
+    staking:
+      params:
+        bond_denom: "unuah"
+    mint:
+      params:
+        mint_denom: "unuah"
+    crisis:
+      constant_fee:
+        denom: "unuah"
+        amount: "1000"
