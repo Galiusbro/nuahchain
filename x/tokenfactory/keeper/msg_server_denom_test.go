@@ -23,7 +23,7 @@ func TestDenomMsgServerCreate(t *testing.T) {
 		}
 		_, err := srv.CreateDenom(f.ctx, expected)
 		require.NoError(t, err)
-		rst, err := f.keeper.Denom.Get(f.ctx, expected.Denom)
+		rst, err := f.keeper.Denom.Get(f.ctx, f.keeper.FullDenom(expected.Owner, expected.Denom))
 		require.NoError(t, err)
 		require.Equal(t, expected.Owner, rst.Owner)
 	}
@@ -85,7 +85,7 @@ func TestDenomMsgServerUpdate(t *testing.T) {
 				require.ErrorIs(t, err, tc.err)
 			} else {
 				require.NoError(t, err)
-				rst, err := f.keeper.Denom.Get(f.ctx, expected.Denom)
+				rst, err := f.keeper.Denom.Get(f.ctx, f.keeper.FullDenom(expected.Owner, expected.Denom))
 				require.NoError(t, err)
 				require.Equal(t, expected.Owner, rst.Owner)
 			}
@@ -148,7 +148,8 @@ func TestDenomMsgServerDelete(t *testing.T) {
 				require.ErrorIs(t, err, tc.err)
 			} else {
 				require.NoError(t, err)
-				found, err := f.keeper.Denom.Has(f.ctx, tc.request.Denom)
+				full := f.keeper.FullDenom(tc.request.Owner, tc.request.Denom)
+				found, err := f.keeper.Denom.Has(f.ctx, full)
 				require.NoError(t, err)
 				require.False(t, found)
 			}
