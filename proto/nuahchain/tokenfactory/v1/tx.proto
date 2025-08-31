@@ -1,4 +1,5 @@
 syntax = "proto3";
+
 package nuahchain.tokenfactory.v1;
 
 import "amino/amino.proto";
@@ -16,6 +17,27 @@ service Msg {
   // UpdateParams defines a (governance) operation for updating the module
   // parameters. The authority defaults to the x/gov module account.
   rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
+
+  // CreateDenom defines the CreateDenom RPC.
+  rpc CreateDenom(MsgCreateDenom) returns (MsgCreateDenomResponse);
+
+  // UpdateDenom defines the UpdateDenom RPC.
+  rpc UpdateDenom(MsgUpdateDenom) returns (MsgUpdateDenomResponse);
+
+  // DeleteDenom defines the DeleteDenom RPC.
+  rpc DeleteDenom(MsgDeleteDenom) returns (MsgDeleteDenomResponse);
+
+  // Mint defines the Mint RPC.
+  rpc Mint(MsgMint) returns (MsgMintResponse);
+
+  // Burn defines the Burn RPC.
+  rpc Burn(MsgBurn) returns (MsgBurnResponse);
+
+  // ChangeAdmin defines the ChangeAdmin RPC.
+  rpc ChangeAdmin(MsgChangeAdmin) returns (MsgChangeAdminResponse);
+
+  // SetDenomMetadata defines the SetDenomMetadata RPC.
+  rpc SetDenomMetadata(MsgSetDenomMetadata) returns (MsgSetDenomMetadataResponse);
 }
 
 // MsgUpdateParams is the Msg/UpdateParams request type.
@@ -27,7 +49,7 @@ message MsgUpdateParams {
   string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 
   // params defines the module parameters to update.
-  //
+
   // NOTE: All parameters must be supplied.
   Params params = 2 [
     (gogoproto.nullable) = false,
@@ -38,3 +60,96 @@ message MsgUpdateParams {
 // MsgUpdateParamsResponse defines the response structure for executing a
 // MsgUpdateParams message.
 message MsgUpdateParamsResponse {}
+
+// MsgCreateDenom defines the MsgCreateDenom message.
+message MsgCreateDenom {
+  option (cosmos.msg.v1.signer) = "owner";
+  string owner = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string denom = 2;
+  string description = 3;
+  string ticker = 4;
+  int64 precision = 5;
+  string url = 6;
+  int64 max_supply = 7;
+  int64 supply = 8;
+  bool can_change_max_supply = 9;
+}
+
+// MsgCreateDenomResponse defines the MsgCreateDenomResponse message.
+message MsgCreateDenomResponse {}
+
+// MsgUpdateDenom defines the MsgUpdateDenom message.
+message MsgUpdateDenom {
+  option (cosmos.msg.v1.signer) = "owner";
+  string owner = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string denom = 2;
+  string description = 3;
+  string ticker = 4;
+  int64 precision = 5;
+  string url = 6;
+  int64 max_supply = 7;
+  int64 supply = 8;
+  bool can_change_max_supply = 9;
+}
+
+// MsgUpdateDenomResponse defines the MsgUpdateDenomResponse message.
+message MsgUpdateDenomResponse {}
+
+// MsgDeleteDenom defines the MsgDeleteDenom message.
+message MsgDeleteDenom {
+  option (cosmos.msg.v1.signer) = "owner";
+  string owner = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string denom = 2;
+}
+
+// MsgDeleteDenomResponse defines the MsgDeleteDenomResponse message.
+message MsgDeleteDenomResponse {}
+
+// MsgMint defines the MsgMint message.
+message MsgMint {
+  option (cosmos.msg.v1.signer) = "owner";
+  string owner = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string denom = 2;
+  int64 amount = 3;
+  string recipient = 4;
+}
+
+// MsgMintResponse defines the MsgMintResponse message.
+message MsgMintResponse {}
+
+// MsgBurn defines the MsgBurn message.
+message MsgBurn {
+  option (cosmos.msg.v1.signer) = "owner";
+  string owner = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string denom = 2;
+  int64 amount = 3;
+}
+
+// MsgBurnResponse defines the MsgBurnResponse message.
+message MsgBurnResponse {}
+
+// MsgChangeAdmin defines the MsgChangeAdmin message.
+message MsgChangeAdmin {
+  option (cosmos.msg.v1.signer) = "owner";
+  string owner = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string denom = 2;
+  string new_admin = 3;
+}
+
+// MsgChangeAdminResponse defines the MsgChangeAdminResponse message.
+message MsgChangeAdminResponse {}
+
+// MsgSetDenomMetadata defines the MsgSetDenomMetadata message.
+message MsgSetDenomMetadata {
+  option (cosmos.msg.v1.signer) = "owner";
+  string owner = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string base = 2;
+  string name = 3;
+  string symbol = 4;
+  string display = 5;
+  string denom_units = 6;
+  string description = 7;
+}
+
+// MsgSetDenomMetadataResponse defines the MsgSetDenomMetadataResponse message.
+message MsgSetDenomMetadataResponse {}

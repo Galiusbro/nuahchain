@@ -1,10 +1,12 @@
 syntax = "proto3";
+
 package nuahchain.tokenfactory.v1;
 
 import "amino/amino.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
+import "nuahchain/tokenfactory/v1/denom.proto";
 import "nuahchain/tokenfactory/v1/params.proto";
 
 option go_package = "github.com/you/nuahchain/x/tokenfactory/types";
@@ -14,6 +16,16 @@ service Query {
   // Parameters queries the parameters of the module.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/you/nuahchain/tokenfactory/v1/params";
+  }
+
+  // ListDenom Queries a list of Denom items.
+  rpc GetDenom(QueryGetDenomRequest) returns (QueryGetDenomResponse) {
+    option (google.api.http).get = "/you/nuahchain/tokenfactory/v1/denom/{denom}";
+  }
+
+  // ListDenom defines the ListDenom RPC.
+  rpc ListDenom(QueryAllDenomRequest) returns (QueryAllDenomResponse) {
+    option (google.api.http).get = "/you/nuahchain/tokenfactory/v1/denom";
   }
 }
 
@@ -27,4 +39,25 @@ message QueryParamsResponse {
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
+}
+
+// QueryGetDenomRequest defines the QueryGetDenomRequest message.
+message QueryGetDenomRequest {
+  string denom = 1;
+}
+
+// QueryGetDenomResponse defines the QueryGetDenomResponse message.
+message QueryGetDenomResponse {
+  Denom denom = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryAllDenomRequest defines the QueryAllDenomRequest message.
+message QueryAllDenomRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// QueryAllDenomResponse defines the QueryAllDenomResponse message.
+message QueryAllDenomResponse {
+  repeated Denom denom = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }

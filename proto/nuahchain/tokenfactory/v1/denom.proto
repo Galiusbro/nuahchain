@@ -1,0 +1,17 @@
+syntax = "proto3";
+package nuahchain.tokenfactory.v1;
+
+option go_package = "github.com/you/nuahchain/x/tokenfactory/types";
+
+// Denom defines the Denom message.
+message Denom {
+  string denom = 1;
+  string description = 2;
+  string ticker = 3;
+  int64 precision = 4;
+  string url = 5;
+  int64 max_supply = 6;
+  int64 supply = 7;
+  bool can_change_max_supply = 8;
+  string owner = 9;
+}

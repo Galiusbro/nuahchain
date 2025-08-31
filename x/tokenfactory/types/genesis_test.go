@@ -20,8 +20,21 @@ func TestGenesisState_Validate(t *testing.T) {
 		},
 		{
 			desc:     "valid genesis state",
-			genState: &types.GenesisState{},
+			genState: &types.GenesisState{DenomMap: []types.Denom{{Denom: "0"}, {Denom: "1"}}},
 			valid:    true,
+		}, {
+			desc: "duplicated denom",
+			genState: &types.GenesisState{
+				DenomMap: []types.Denom{
+					{
+						Denom: "0",
+					},
+					{
+						Denom: "0",
+					},
+				},
+			},
+			valid: false,
 		},
 	}
 	for _, tc := range tests {

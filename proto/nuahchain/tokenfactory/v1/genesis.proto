@@ -1,8 +1,10 @@
 syntax = "proto3";
+
 package nuahchain.tokenfactory.v1;
 
 import "amino/amino.proto";
 import "gogoproto/gogo.proto";
+import "nuahchain/tokenfactory/v1/denom.proto";
 import "nuahchain/tokenfactory/v1/params.proto";
 
 option go_package = "github.com/you/nuahchain/x/tokenfactory/types";
@@ -14,4 +16,5 @@ message GenesisState {
     (gogoproto.nullable) = false,
     (amino.dont_omitempty) = true
   ];
+  repeated Denom denom_map = 2 [(gogoproto.nullable) = false];
 }
