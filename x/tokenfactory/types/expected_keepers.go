@@ -22,7 +22,7 @@ type BankKeeper interface {
 	BurnCoins(context.Context, string, sdk.Coins) error
 	SendCoinsFromModuleToAccount(context.Context, string, sdk.AccAddress, sdk.Coins) error
 	SendCoinsFromAccountToModule(context.Context, sdk.AccAddress, string, sdk.Coins) error
-	SetDenomMetaData(context.Context, banktypes.Metadata) error
+	SetDenomMetaData(context.Context, banktypes.Metadata)
 }
 
 // ParamSubspace defines the expected Subspace interface for parameters.

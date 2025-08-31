@@ -47,9 +47,7 @@ func (k msgServer) SetDenomMetadata(goCtx context.Context, msg *types.MsgSetDeno
 		Description: msg.Description,
 	}
 
-	if err := k.bankKeeper.SetDenomMetaData(ctx, md); err != nil {
-		return nil, err
-	}
+	k.bankKeeper.SetDenomMetaData(ctx, md)
 
 	return &types.MsgSetDenomMetadataResponse{}, nil
 }
