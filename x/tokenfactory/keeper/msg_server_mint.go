@@ -4,6 +4,7 @@ import (
 	"context"
 
 	errorsmod "cosmossdk.io/errors"
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/you/nuahchain/x/tokenfactory/types"
@@ -29,7 +30,7 @@ func (k msgServer) Mint(goCtx context.Context, msg *types.MsgMint) (*types.MsgMi
 		return nil, errorsmod.Wrap(err, "invalid recipient address")
 	}
 
-	coins := sdk.NewCoins(sdk.NewCoin(msg.Denom, sdk.NewInt(msg.Amount)))
+	coins := sdk.NewCoins(sdk.NewCoin(msg.Denom, sdkmath.NewInt(msg.Amount)))
 
 	if err := k.bankKeeper.MintCoins(ctx, types.ModuleAccountName, coins); err != nil {
 		return nil, err

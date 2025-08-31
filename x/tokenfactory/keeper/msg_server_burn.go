@@ -4,6 +4,7 @@ import (
 	"context"
 
 	errorsmod "cosmossdk.io/errors"
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/you/nuahchain/x/tokenfactory/types"
@@ -24,7 +25,7 @@ func (k msgServer) Burn(goCtx context.Context, msg *types.MsgBurn) (*types.MsgBu
 		return nil, types.ErrInvalidAmount
 	}
 
-	coins := sdk.NewCoins(sdk.NewCoin(msg.Denom, sdk.NewInt(msg.Amount)))
+	coins := sdk.NewCoins(sdk.NewCoin(msg.Denom, sdkmath.NewInt(msg.Amount)))
 	adminAddr := sdk.AccAddress(admin)
 
 	if err := k.bankKeeper.SendCoinsFromAccountToModule(ctx, adminAddr, types.ModuleAccountName, coins); err != nil {
