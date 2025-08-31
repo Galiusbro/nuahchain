@@ -7,26 +7,30 @@ import (
 
 	"cosmossdk.io/collections"
 	errorsmod "cosmossdk.io/errors"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 	"github.com/you/nuahchain/x/tokenfactory/types"
 )
 
-func (k msgServer) CreateDenom(ctx context.Context, msg *types.MsgCreateDenom) (*types.MsgCreateDenomResponse, error) {
+func (k msgServer) CreateDenom(goCtx context.Context, msg *types.MsgCreateDenom) (*types.MsgCreateDenomResponse, error) {
 	if _, err := k.addressCodec.StringToBytes(msg.Owner); err != nil {
 		return nil, errorsmod.Wrap(sdkerrors.ErrInvalidAddress, fmt.Sprintf("invalid address: %s", err))
 	}
 
-	// Check if the value already exists
-	ok, err := k.Denom.Has(ctx, msg.Denom)
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	full := k.FullDenom(msg.Owner, msg.Denom)
+
+	ok, err := k.Denom.Has(ctx, full)
 	if err != nil {
 		return nil, errorsmod.Wrap(sdkerrors.ErrLogic, err.Error())
 	} else if ok {
-		return nil, errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "index already set")
+		return nil, types.ErrDenomExists
 	}
 
-	var denom = types.Denom{
+	denom := types.Denom{
 		Owner:              msg.Owner,
-		Denom:              msg.Denom,
+		Denom:              full,
 		Description:        msg.Description,
 		Ticker:             msg.Ticker,
 		Precision:          msg.Precision,
@@ -43,13 +47,15 @@ func (k msgServer) CreateDenom(ctx context.Context, msg *types.MsgCreateDenom) (
 	return &types.MsgCreateDenomResponse{}, nil
 }
 
-func (k msgServer) UpdateDenom(ctx context.Context, msg *types.MsgUpdateDenom) (*types.MsgUpdateDenomResponse, error) {
+func (k msgServer) UpdateDenom(goCtx context.Context, msg *types.MsgUpdateDenom) (*types.MsgUpdateDenomResponse, error) {
 	if _, err := k.addressCodec.StringToBytes(msg.Owner); err != nil {
 		return nil, errorsmod.Wrap(sdkerrors.ErrInvalidAddress, fmt.Sprintf("invalid signer address: %s", err))
 	}
 
-	// Check if the value exists
-	val, err := k.Denom.Get(ctx, msg.Denom)
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	full := k.FullDenom(msg.Owner, msg.Denom)
+
+	val, err := k.Denom.Get(ctx, full)
 	if err != nil {
 		if errors.Is(err, collections.ErrNotFound) {
 			return nil, errorsmod.Wrap(sdkerrors.ErrKeyNotFound, "index not set")
@@ -58,14 +64,13 @@ func (k msgServer) UpdateDenom(ctx context.Context, msg *types.MsgUpdateDenom) (
 		return nil, errorsmod.Wrap(sdkerrors.ErrLogic, err.Error())
 	}
 
-	// Checks if the msg owner is the same as the current owner
 	if msg.Owner != val.Owner {
 		return nil, errorsmod.Wrap(sdkerrors.ErrUnauthorized, "incorrect owner")
 	}
 
-	var denom = types.Denom{
+	denom := types.Denom{
 		Owner:              msg.Owner,
-		Denom:              msg.Denom,
+		Denom:              full,
 		Description:        msg.Description,
 		Ticker:             msg.Ticker,
 		Precision:          msg.Precision,
@@ -82,13 +87,15 @@ func (k msgServer) UpdateDenom(ctx context.Context, msg *types.MsgUpdateDenom) (
 	return &types.MsgUpdateDenomResponse{}, nil
 }
 
-func (k msgServer) DeleteDenom(ctx context.Context, msg *types.MsgDeleteDenom) (*types.MsgDeleteDenomResponse, error) {
+func (k msgServer) DeleteDenom(goCtx context.Context, msg *types.MsgDeleteDenom) (*types.MsgDeleteDenomResponse, error) {
 	if _, err := k.addressCodec.StringToBytes(msg.Owner); err != nil {
 		return nil, errorsmod.Wrap(sdkerrors.ErrInvalidAddress, fmt.Sprintf("invalid signer address: %s", err))
 	}
 
-	// Check if the value exists
-	val, err := k.Denom.Get(ctx, msg.Denom)
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	full := k.FullDenom(msg.Owner, msg.Denom)
+
+	val, err := k.Denom.Get(ctx, full)
 	if err != nil {
 		if errors.Is(err, collections.ErrNotFound) {
 			return nil, errorsmod.Wrap(sdkerrors.ErrKeyNotFound, "index not set")
@@ -97,12 +104,11 @@ func (k msgServer) DeleteDenom(ctx context.Context, msg *types.MsgDeleteDenom) (
 		return nil, errorsmod.Wrap(sdkerrors.ErrLogic, err.Error())
 	}
 
-	// Checks if the msg owner is the same as the current owner
 	if msg.Owner != val.Owner {
 		return nil, errorsmod.Wrap(sdkerrors.ErrUnauthorized, "incorrect owner")
 	}
 
-	if err := k.Denom.Remove(ctx, msg.Denom); err != nil {
+	if err := k.Denom.Remove(ctx, full); err != nil {
 		return nil, errorsmod.Wrap(sdkerrors.ErrLogic, "failed to remove denom")
 	}
 

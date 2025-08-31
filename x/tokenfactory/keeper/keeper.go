@@ -1,12 +1,15 @@
 package keeper
 
 import (
+	"context"
 	"fmt"
 
 	"cosmossdk.io/collections"
 	"cosmossdk.io/core/address"
 	corestore "cosmossdk.io/core/store"
 	"github.com/cosmos/cosmos-sdk/codec"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/you/nuahchain/x/tokenfactory/types"
 )
@@ -65,4 +68,37 @@ func NewKeeper(
 // GetAuthority returns the module's authority.
 func (k Keeper) GetAuthority() []byte {
 	return k.authority
+}
+
+// FullDenom constructs the full denom path for a given owner and subdenom
+func (k Keeper) FullDenom(owner, subdenom string) string {
+	return fmt.Sprintf("factory/%s/%s", owner, subdenom)
+}
+
+// GetDenom returns denom data from store
+func (k Keeper) GetDenom(ctx context.Context, denom string) (types.Denom, bool) {
+	val, err := k.Denom.Get(ctx, denom)
+	if err != nil {
+		return types.Denom{}, false
+	}
+	return val, true
+}
+
+// SetDenom stores denom data
+func (k Keeper) SetDenom(ctx context.Context, d types.Denom) {
+	if err := k.Denom.Set(ctx, d.Denom, d); err != nil {
+		panic(err)
+	}
+}
+
+// MustBeAdmin checks that caller is admin of denom
+func (k Keeper) MustBeAdmin(ctx context.Context, denom string, caller sdk.AccAddress) error {
+	d, ok := k.GetDenom(ctx, denom)
+	if !ok {
+		return sdkerrors.ErrInvalidRequest.Wrap("denom does not exist")
+	}
+	if d.Owner != caller.String() {
+		return types.ErrNotAdmin
+	}
+	return nil
 }
